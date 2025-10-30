@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="format-detection" content="telephone=no">
+  <title>澳門智慧停車場管理系統</title>
+  <!-- 引入外部資源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#0052cc', // 澳門政府藍
+            secondary: '#008000', // 澳門綠色
+            warning: '#ff7d00', 
+            danger: '#e60000',
+            gray: {
+              100: '#f7f8fa',
+              200: '#e5e6eb',
+              300: '#c9cdD4',
+              400: '#86909c',
+              500: '#4e5969',
+              600: '#272e3b',
+              700: '#1d2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+  
+  <!-- 自定義工具類 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .macau-shadow {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+      .number-change {
+        animation: numberPulse 0.5s ease-in-out;
+      }
+      @keyframes numberPulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+      }
+    }
+  </style>
+  
+  <style>
+    /* 全局樣式 */
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background-color: #f7f8fa;
+      overflow-x: hidden;
+    }
+    
+    /* 平滑滾動 */
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    /* 動畫效果 */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 數字增長動畫 */
+    @keyframes countUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .count-animation {
+      animation: countUp 0.8s ease-out forwards;
+    }
+  </style>
+</head>
+
+<body class="font-inter text-gray-700 bg-gray-100">
+  <!-- 頂部導航欄 -->
+  <header class="fixed top-0 left-0 right-0 bg-white macau-shadow z-50 transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center">
+        <i class="fa fa-car text-primary text-2xl mr-2"></i>
+        <h1 class="text-lg font-semibold text-gray-700">澳門智慧停車場</h1>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主內容區 -->
+  <main class="container mx-auto px-4 pt-16 pb-20">
+    <!-- 公告區（無圖片） -->
+    <section class="mt-4 mb-6 rounded-xl overflow-hidden bg-primary fade-in">
+      <div class="p-4 text-white">
+        <p class="text-sm md:text-base font-medium mb-1">最新公告</p>
+        <p class="text-xs md:text-sm opacity-90">停車場將於11月5日進行系統升級，期間可能影響正常使用。升級期間將提供臨時停車指引，請留意現場工作人員安排。</p>
+      </div>
+    </section>
+
+    <!-- 風險提示模塊 -->
+    <section class="mb-6 fade-in" style="animation-delay: 0.1s">
+      <div class="bg-white rounded-xl p-4 macau-shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-base font-semibold text-gray-700 flex items-center">
+            <i class="fa fa-exclamation-triangle text-warning mr-2"></i>
+            風險提示
+          </h2>
+        </div>
+        
+        <!-- 風險提示列表 -->
+        <ul class="space-y-3">
+          <li class="flex p-3 bg-warning/5 rounded-lg border border-warning/20">
+            <div class="mr-3 text-warning">
+              <i class="fa fa-clock-o text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">營業時間調整</p>
+              <p class="text-xs text-gray-500 mt-1">因設備維護，10月20日起停車場營業時間臨時調整為06:00-23:00，恢復時間另行通知</p>
+            </div>
+          </li>
+          
+          <li class="flex p-3 bg-danger/5 rounded-lg border border-danger/20">
+            <div class="mr-3 text-danger">
+              <i class="fa fa-credit-card text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">支付系統維護</p>
+              <p class="text-xs text-gray-500 mt-1">10月31日00:00-11月2日23:00將進行支付系統維護，期間僅支持現金支付</p>
+            </div>
+          </li>
+          
+          <li class="flex p-3 bg-primary/5 rounded-lg border border-primary/20">
+            <div class="mr-3 text-primary">
+              <i class="fa fa-road text-xl"></i>
+            </div>
+            <div>
+              <p class="text-sm font-medium text-gray-700">周邊道路施工</p>
+              <p class="text-xs text-gray-500 mt-1">停車場入口周邊道路將於10月25日起進行維修，建議從側門進出</p>
+            </div>
+          </li>
+        </ul>
+        
+        <!-- 風險提示跳轉按鈕 -->
+        <button onclick="window.location.href='http://mobile.smg.gov.mo/c_warning_wechat.htm'" 
+                class="w-full mt-4 py-2.5 bg-warning text-white rounded-lg text-sm font-medium hover:bg-warning/90 transition-colors flex items-center justify-center">
+          <i class="fa fa-external-link mr-1"></i> 查看澳門特別行政區政府地球物理氣象局警告
+        </button>
+      </div>
+    </section>
+
+    <!-- 停車場狀態概覽 -->
+    <section class="mb-6 fade-in" style="animation-delay: 0.2s">
+      <div class="bg-white rounded-xl p-4 macau-shadow">
+        <h2 class="text-base font-semibold text-gray-700 mb-4">停車場狀態</h2>
+        
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <div class="bg-gray-100 rounded-lg p-3 text-center card-hover">
+            <p class="text-xs text-gray-500 mb-1">總車位</p>
+            <p class="text-xl font-bold text-primary count-animation" id="totalSpots">350</p>
+          </div>
+          
+          <div class="bg-gray-100 rounded-lg p-3 text-center card-hover">
+            <p class="text-xs text-gray-500 mb-1">可用車位</p>
+            <p class="text-xl font-bold text-secondary count-animation" style="animation-delay: 0.1s" id="availableSpots">86</p>
+          </div>
+          
+          <div class="bg-gray-100 rounded-lg p-3 text-center card-hover">
+            <p class="text-xs text-gray-500 mb-1">今日入場</p>
+            <p class="text-xl font-bold text-gray-600 count-animation" style="animation-delay: 0.2s" id="todayEntries">247</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 車輛管理模塊（默認為空） -->
+    <section class="mb-6 fade-in" style="animation-delay: 0.4s">
+      <div class="bg-white rounded-xl p-4 macau-shadow">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-base font-semibold text-gray-700 flex items-center">
+            <i class="fa fa-cog text-primary mr-2"></i>
+            車輛管理
+          </h2>
+          <button class="text-primary text-sm flex items-center">
+            全部 <i class="fa fa-angle-right ml-1"></i>
+          </button>
+        </div>
+        
+        <!-- 已登記車輛列表（默認為空） -->
+        <ul class="space-y-3" id="vehicleList">
+          <!-- 这里默认没有车辆，用户需要通过"添加新车辆"按钮手动添加 -->
+        </ul>
+        
+        <!-- 添加車輛按鈕 -->
+        <button id="addVehicle" class="w-full mt-4 py-2.5 border border-dashed border-primary text-primary rounded-lg text-sm font-medium hover:bg-primary/5 transition-colors flex items-center justify-center">
+          <i class="fa fa-plus mr-1"></i> 添加新車輛
+        </button>
+      </div>
+    </section>
+
+    <!-- 快捷服務區 -->
+    <section class="mb-6 fade-in" style="animation-delay: 0.5s">
+      <div class="bg-white rounded-xl p-4 macau-shadow">
+        <h2 class="text-base font-semibold text-gray-700 mb-4">快捷服務</h2>
+        
+        <div class="grid grid-cols-3 gap-3" id="quickServices">
+          <div class="flex flex-col items-center p-2 card-hover rounded-lg cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center text-secondary mb-2">
+              <i class="fa fa-ticket"></i>
+            </div>
+            <p class="text-xs text-gray-600">停車券</p>
+          </div>
+          
+          <div class="flex flex-col items-center p-2 card-hover rounded-lg cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-warning/10 flex items-center justify-center text-warning mb-2">
+              <i class="fa fa-bell"></i>
+            </div>
+            <p class="text-xs text-gray-600">預約車位</p>
+          </div>
+          
+          <div class="flex flex-col items-center p-2 card-hover rounded-lg cursor-pointer">
+            <div class="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 mb-2">
+              <i class="fa fa-question-circle"></i>
+            </div>
+            <p class="text-xs text-gray-600">幫助中心</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 底部導航 -->
+  <footer class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-40">
+    <div class="grid grid-cols-2">
+      <a href="#" class="flex flex-col items-center py-2 text-primary">
+        <i class="fa fa-home text-lg"></i>
+        <span class="text-xs mt-1">首頁</span>
+      </a>
+      
+      <a href="https://www.amap.com/" class="flex flex-col items-center py-2 text-gray-400 hover:text-primary transition-colors">
+        <i class="fa fa-map text-lg"></i>
+        <span class="text-xs mt-1">地圖</span>
+      </a>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // 導航欄滾動效果
+    window.addEventListener('scroll', function() {
+      const navbar = document.getElementById('navbar');
+      if (window.scrollY > 10) {
+        navbar.classList.add('py-2');
+        navbar.classList.remove('py-3');
+        navbar.classList.add('shadow-md');
+      } else {
+        navbar.classList.add('py-3');
+        navbar.classList.remove('py-2');
+        navbar.classList.remove('shadow-md');
+      }
+    });
+    
+    // 停車場數據管理
+    let totalSpots = 350;
+    let availableSpots = 86;
+    let todayEntries = 247;
+    
+    // 獲取DOM元素
+    const availableSpotsEl = document.getElementById('availableSpots');
+    const todayEntriesEl = document.getElementById('todayEntries');
+    
+    // 數字變化動畫
+    function animateNumberChange(element, newValue) {
+      element.classList.add('number-change');
+      element.textContent = newValue;
+      setTimeout(() => {
+        element.classList.remove('number-change');
+      }, 500);
+    }
+    
+    // 隨機更新可用車位
+    function updateParkingData() {
+      const total = parseInt(document.getElementById('totalSpots').textContent);
+      const change = Math.random() > 0.5 ? 1 : -1;
+      
+      let newAvailable = availableSpots + change;
+      newAvailable = Math.max(0, Math.min(total, newAvailable));
+      
+      if (newAvailable !== availableSpots) {
+        availableSpots = newAvailable;
+        animateNumberChange(availableSpotsEl, availableSpots);
+        
+        todayEntries += (change * -1);
+        todayEntries = Math.max(0, todayEntries);
+        animateNumberChange(todayEntriesEl, todayEntries);
+      }
+    }
+    
+    setInterval(updateParkingData, 28000);
+    
+    // 車輛管理（符合XX-XX-XX格式驗證）
+    document.getElementById('addVehicle').addEventListener('click', function() {
+      // 提示用戶輸入XX-XX-XX格式的車牌
+      const plateNumber = prompt('請輸入澳門車牌號碼（格式如：XX-XX-XX）：');
+      
+      // 驗證格式：兩個字母-兩個數字-兩個數字
+      if (plateNumber && /^[A-Z]{2}-[0-9]{2}-[0-9]{2}$/.test(plateNumber)) {
+        const vehicleList = document.getElementById('vehicleList');
+        const newVehicle = document.createElement('li');
+        newVehicle.className = 'flex items-center p-3 border border-gray-200 rounded-lg card-hover fade-in opacity-0 transform translate-x-4';
+        newVehicle.style.transition = 'all 0.3s ease';
+        newVehicle.innerHTML = `
+          <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mr-3">
+            <i class="fa fa-car"></i>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-medium text-gray-700">${plateNumber}</p>
+            <p class="text-xs text-gray-500">新增車輛 · 已綁定</p>
+          </div>
+          <button class="text-primary text-sm delete-vehicle">
+            <i class="fa fa-trash-o"></i>
+          </button>
+        `;
+        vehicleList.prepend(newVehicle);
+        
+        setTimeout(() => {
+          newVehicle.classList.remove('opacity-0', 'translate-x-4');
+        }, 10);
+        
+        newVehicle.querySelector('.delete-vehicle').addEventListener('click', function() {
+          if (confirm(`確定要刪除車輛 ${plateNumber} 嗎？`)) {
+            newVehicle.classList.add('opacity-0', 'translate-x-4');
+            setTimeout(() => newVehicle.remove(), 300);
+          }
+        });
+      } else if (plateNumber) {
+        alert('請輸入有效的澳門車牌號碼（格式如：XX-XX-XX，例如AB-12-34）');
+      }
+    });
+    
+    // 快捷服務點擊事件 - 彈出暫未對公眾開放提示
+    document.querySelectorAll('#quickServices > div').forEach(service => {
+      service.addEventListener('click', function() {
+        alert('暫未對公眾開放');
+      });
+    });
+    
+    // 視口動畫監聽
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    
+    document.querySelectorAll('section').forEach(section => {
+      observer.observe(section);
+    });
+  </script>
+</body>
+</html>
